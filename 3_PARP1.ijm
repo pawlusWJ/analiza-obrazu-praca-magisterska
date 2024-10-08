@@ -9,7 +9,7 @@ setAutoThreshold("Li dark no-reset");
 setOption("BlackBackground", true);
 run("Convert to Mask", "method=Li background=Dark calculate black");
 
-//nalozenie maski na obraz oryginalny i obliczenie sredniej jasnosci + zachowanie tej jasności w jakiejś zmiennej
+//nalozenie maski na obraz oryginalny i obliczenie sredniej jasnosci + zachowanie tej jasności w zmiennej meanBrightness
 run("Rename...");
 
 //odjęcie tła,zduplikowanie obrazu
@@ -22,6 +22,7 @@ setAutoThreshold("Li dark no-reset");
 // Oblicz średnią jasność i usuń dane z roimanagera
 run("Analyze Particles...", "size=10-Infinity show=Outlines display clear include summarize overlay add composite stack");
 
+//zapisanie wyników do folderu, w formacie csv
 path_save=getDirectory("Zapisz wyniki parametrów jądra komórkowego HPF1");
 saveAs("Results", path_save + File.separator + title +"_wyniki_jądro_kom" + ".csv");
 roiManager("delete");
@@ -61,8 +62,8 @@ waitForUser("wybierz obraz z foci do wygenerowania maski");
 for (slice = 1; slice <= maxSlices; slice++) {
     
                 
-        //Utwórz zaznaczenie i przenieś zaznaczenie na następny slice
-       	setThreshold(meanBrightness*1.25, 255); // Progowanie wokół meanInFoci
+        //Threshold ustalony na podstawie zmiennej meanBrightness pomnożony przez współczynnik
+       	setThreshold(meanBrightness*1.25, 255); // Progowanie wokół meanBrightness
         	
     	//przesuń do następnego slice
     	run("Next Slice [>]");
@@ -80,7 +81,7 @@ run("Erode", "stack");
 run("Erode", "stack");
 
 
-
+//Co w przypadku, gdy brakuje danej maski? 
 //maska z poprzedniego punktu - trzymać się jej do końca slice
 //albo przeskoczyć jeden slice
 //albo wziąć maske z poprzedniego slice'a
